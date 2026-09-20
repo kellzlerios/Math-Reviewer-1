@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>General Mathematics Flash Quiz</title>
+  <style>
+    /* Retro 2000s Flash / Skeuomorphic UI */
+    body {
+      background-color: #1a1a1a;
+      background-image: radial-gradient(#333 1px, transparent 1px);
+      background-size: 16px 16px;
+      font-family: "Trebuchet MS", Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      color: #333;
+    }
+
+    .flash-container {
+      width: 600px;
+      background: linear-gradient(to bottom, #e6e6e6 0%, #cccccc 100%);
+      border: 4px solid #444;
+      border-radius: 10px;
+      box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.7), inset 0px 1px 0px #fff;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .flash-header {
+      background: linear-gradient(to bottom, #4c4c4c 0%, #1c1c1c 100%);
+      color: #00ffcc;
+      padding: 10px 15px;
+      font-size: 14px;
+      font-weight: bold;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      border-bottom: 2px solid #000;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      text-shadow: 0 0 5px rgba(0, 255, 204, 0.6);
+    }
+
+    .flash-badge {
+      background: #ff6600;
+      color: #fff;
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: 3px;
+      text-shadow: none;
+    }
+
+    .stage {
+      padding: 25px;
+      min-height: 320px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .question-title {
+      font-size: 17px;
+      font-weight: bold;
+      color: #111;
+      margin-bottom: 18px;
+      text-shadow: 1px 1px 0px #fff;
+      line-height: 1.4;
+    }
+
+    .options-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .flash-btn {
+      background: linear-gradient(to bottom, #ffffff 0%, #e0e0e0 100%);
+      border: 2px solid #888;
+      border-radius: 6px;
+      padding: 10px 14px;
+      font-size: 14px;
+      font-weight: bold;
+      color: #222;
+      cursor: pointer;
+      text-align: left;
+      box-shadow: 0px 3px 0px #999, inset 0px 1px 0px #fff;
+      transition: all 0.1s ease;
+      outline: none;
+    }
+
+    .flash-btn:hover:not(:disabled) {
+      background: linear-gradient(to bottom, #fff6d5 0%, #ffcc00 100%);
+      border-color: #cc9900;
+      box-shadow: 0px 3px 0px #996600, inset 0px 1px 0px #fff;
+      color: #000;
+    }
+
+    .flash-btn:active:not(:disabled) {
+      transform: translateY(3px);
+      box-shadow: 0px 0px 0px #996600, inset 0px 1px 2px rgba(0,0,0,0.4);
+    }
+
+    .controls {
+      margin-top: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .status-text {
+      font-size: 13px;
+      font-weight: bold;
+      color: #555;
+    }
+
+    .next-btn {
+      background: linear-gradient(to bottom, #00cc66 0%, #009944 100%);
+      border: 2px solid #006622;
+      color: white;
+      padding: 8px 20px;
+      border-radius: 4px;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0px 3px 0px #004d1a;
+      display: none;
+    }
+
+    .next-btn:hover {
+      background: linear-gradient(to bottom, #00ff80 0%, #00cc55 100%);
+    }
+
+    .next-btn:active {
+      transform: translateY(3px);
+      box-shadow: 0px 0px 0px #004d1a;
+    }
+
+    .score-screen {
+      text-align: center;
+    }
+
+    .score-screen h2 {
+      color: #006699;
+      font-size: 24px;
+      margin-bottom: 10px;
+    }
+
+    .score-badge {
+      font-size: 36px;
+      font-weight: bold;
+      color: #ff6600;
+      margin: 15px 0;
+      text-shadow: 2px 2px 0px #fff;
+    }
+  </style>
+</head>
+<body>
+
+<div class="flash-container">
+  <div class="flash-header">
+    <span>General Math Reviewer Player v1.0</span>
+    <span class="flash-badge">SWF MODE</span>
+  </div>
+
+  <div class="stage" id="quiz-stage">
+    <div>
+      <div class="question-title" id="question-text">Loading...</div>
+      <div class="options-grid" id="options-container"></div>
+    </div>
+
+    <div class="controls">
+      <span class="status-text" id="progress-text"></span>
+      <button class="next-btn" id="next-btn" onclick="nextQuestion()">Next Question &raquo;</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const quizData = [
+    { question: "What is the financial term for the original loan amount borrowed?", options: ["Amount", "Period", "Principal", "Rate"], correct: 2 },
+    { question: "Which of the following defines basic pay in employer compensation?", options: ["Fixed Amount received for the job.", "Fixed net income after deductions.", "Fixed salary with overtime.", "Fixed total salary including benefits"], correct: 0 },
+    { question: "In the various wage systems in the Philippines, which falls under the time-based wage system?", options: ["Annual Commission", "Daily Rate", "Per Unit Pay", "Sales Incentive"], correct: 1 },
+    { question: "Which Mathematical Concept is used for a financial model that earns interest each month?", options: ["Arithmetic Series", "Exponential Sequence", "Fibonacci Sequence", "Geometric Series"], correct: 3 },
+    { question: "What is a mathematical Series?", options: ["A sequence of numbers written in a specific order according to a rule", "A Pattern of numbers that repeats after a fixed interval", "The process of finding the next term in a sequence", "The sum of the terms of a sequence."], correct: 3 },
+    { question: "Which statement defines an arithmetic sequence?", options: ["Each next term is found by multiplying the previous term by same factor.", "Each next term is found by adding the same number to the previous term", "Each next term is found by adding the first term to the previous term.", "Each next term is the sum of all earlier terms."], correct: 1 },
+    { question: "In the investment formula, which variable represents the fixed monthly deposit?", options: ["A", "D", "n", "r"], correct: 1 },
+    { question: "What does “VAT” stand for on Philippine sales receipts and invoices?", options: ["Value Added Tax", "Value Annual Tax", "Variable Asset Tax", "Verified Asset Tax"], correct: 0 },
+    { question: "Which scenario describes investment accumulation with interest?", options: ["Paying down a loan balance", "Receiving a single salary payment", "Saving regularly and earning interest", "Spending on recurring fixed expenses"], correct: 2 },
+    { question: "Which of these sequences is formed by adding the two previous terms?", options: ["Arithmetic", "Fibonacci", "Geometric", "Harmonic"], correct: 1 },
+    { question: "A student adds the terms {2,4,6,8,10,…} using a formula instead of manual addition. Which of the following should they apply?", options: ["Arithmetic Series Formula", "Fibonacci Rule", "nth term formula", "Ratio Rule"], correct: 0 },
+    { question: "Which of the following changes will result in a larger sum in a geometric series?", options: ["Decreasing the number of terms", "Decreasing the common ratio", "Increasing the number of terms", "Keeping all values constant"], correct: 2 },
+    { question: "You are given the sequence: {5,10,15,20,….} which formula CORRECTLY represents the total sum of the first n terms?", options: ["S_n = (n/2)(a + l)", "S_n = a * r^n", "S_n = a(1 - r^n) / (1 - r)", "S_n = 1/a + nd"], correct: 0 },
+    { question: "What is the sum of the first five (5) terms of the sequence {2,5,8,11,…}?", options: ["35", "40", "45", "50"], correct: 1 },
+    { question: "If you invest PHP 1,500 monthly in an account with 2% interest for 6 months, which factor will have the MOST influence on growth?", options: ["The interest compounding frequency", "The inflation rate", "The name of the bank", "The timing of deposits"], correct: 0 },
+    { question: "You invest PHP 5,000 monthly for 12 months. How does reducing the interest rate from 2% to 1% affect the total return?", options: ["No effect", "Total value decreases", "Total value increases", "Value remains at PHP60,000"], correct: 1 },
+    { question: "A dealer gives a 20% trade discount on PHP 50,000. What is the net price?", options: ["PHP 40,000", "PHP 42,500", "PHP 45,000", "PHP 48,000"], correct: 0 },
+    { question: "A sequence begins with {1,1,2,3,…} and follows the rule: each term is the sum of the two previous terms. Which of the following is the 7th term in this sequence?", options: ["8", "10", "11", "13"], correct: 3 },
+    { question: "A client deposited PHP 2,000 monthly into an account earning 1.5% monthly interest for 12 months. What is the total value of the investment after 1 year?", options: ["PHP 26,000", "PHP 26,082", "PHP 26,474", "PHP 28,667"], correct: 2 },
+    { question: "What is the 8th term of the geometric sequence {3,6,12,24,……}?", options: ["128", "192", "384", "768"], correct: 3 },
+    { question: "A shirt originally priced at PHP 1,500 is marked down twice: 10% then 15%. What is the purchase price?", options: ["PHP 1,275", "PHP 1,200", "PHP 1,147.50", "PHP 1,111.50"], correct: 2 },
+    { question: "An Employee works 2 hours overtime daily for 5 days. Daily rate is PHP 800. What is weekly OT pay at 125%?", options: ["PHP 800", "PHP 1,000", "PHP 1,250", "PHP 1,600"], correct: 2 },
+    { question: "A student observes the sequence {3,6,12,24,48,…}. Which formula BEST models the sum of the first six terms of this sequence?", options: ["Arithmetic Series", "Harmonic Series", "Geometric Series", "Recursive Pattern Formula"], correct: 2 },
+    { question: "What is the 7th term of the arithmetic sequence {8, 13, 18, 23, …}?", options: ["30", "33", "38", "43"], correct: 2 },
+    { question: "A bank offers 2% monthly interest on a savings plan. If a client deposits PHP 3,000 per month for 12 months, which formula helps calculate the future value of the investment?", options: ["Arithmetic Mean Investment Formula", "Linear Investment Formula", "Geometric Investment Formula", "Loan Investment Formula"], correct: 2 },
+    { question: "What does the geometric series formula help us compute in a financial plan?", options: ["Future value of regular investments", "Income tax bracket", "The cost of goods", "Tax refunds"], correct: 0 },
+    { question: "Which scenario describes investment accumulation with interest?", options: ["Paying down a loan balance", "Receiving a single salary payment", "Saving regularly and earning interest", "Spending on recurring fixed expenses"], correct: 2 },
+    { question: "Which mathematical concept is used for a financial model that earns interest each month?", options: ["Arithmetic series", "Exponential sequence", "Fibonacci Sequence", "Geometric series"], correct: 3 },
+    { question: "What is measurement?", options: ["The process of collecting samples for analysis.", "The process of comparing an unknown quantity with a standard unit", "The process of converting units into decimals.", "The process of finding the percentage of a value"], correct: 1 },
+    { question: "What does conversion mean in the context of measurement?", options: ["Changing a measurement from one unit to another without changing its value.", "Calculating the average of multiple units.", "Rounding values to the nearest unit", "Grouping measurements into sets."], correct: 0 },
+    { question: "Which of the following is a standard metric unit for length?", options: ["Gallon", "Inch", "Meter", "Pound"], correct: 2 },
+    { question: "What is the boiling point of water in Fahrenheit?", options: ["32 °F", "98.6 °F", "100 °F", "212 °F"], correct: 3 },
+    { question: "Which prefix represents one-thousandth in the metric system?", options: ["Centi-", "Deca-", "Kilo-", "Milli-"], correct: 3 },
+    { question: "In time measurement, how many minutes are there in 1 hour?", options: ["24", "30", "60", "100"], correct: 2 },
+    { question: "What is the financial term for the original loan amount borrowed?", options: ["Amount", "Period", "Principal", "Rate"], correct: 2 },
+    { question: "A board measures 2.5 meters. What is its length in inches if 1 inch is equal to 2.54 cm?", options: ["72.51 inches", "88.25 inches", "98.43 inches", "102.63 inches"], correct: 2 },
+    { question: "Which situation BEST illustrates temperature conversion?", options: ["Comparing the temperatures of two cities in degree Celsius", "Converting water to ice", "Measuring water temperature during an experiment using a Celsius thermometer", "Recording a fever by converting body temperature from Celsius into Fahrenheit."], correct: 3 },
+    { question: "Which scenario can be modeled using a geometric series?", options: ["Earning a fixed salary", "Paying rent monthly", "Paying Taxes quarterly", "Saving with compound interest"], correct: 3 },
+    { question: "What is the temperature in Celsius if the thermometer reads 104 °F?", options: ["35 °C", "38 °C", "40 °C", "42 °C"], correct: 2 },
+    { question: "What is the area of a rectangle in square centimeters if its length is 8 inches and its width is 5 inches, given that 1 inch is equal to 2.54 centimeters?", options: ["204.54 cm²", "254.02 cm²", "258.06 cm²", "512.61 cm²"], correct: 2 },
+    { question: "A rectangular metal plate is 12 inches long and 8 inches wide. What is its area in square centimeters if 1 inch is equal to 2.54 centimeters?", options: ["580.25 cm²", "605.40 cm²", "619.35 cm²", "642.75 cm²"], correct: 2 },
+    { question: "A punch bowl contains 3.75 liters of juice. If each glass holds 250 milliliters, how many full glasses can be filled?", options: ["12 glasses", "13 glasses", "15 glasses", "18 glasses"], correct: 2 },
+    { question: "How many liters are equivalent to 3 gallons if 1 gallon is equal to 3.785 liters?", options: ["10.75 L", "11.14 L", "11.36 L", "12.01 L"], correct: 2 },
+    { question: "What is the area of a room in square feet if its floor area is 20 square meters, given that 1 square meter is equal to 10.764 square feet?", options: ["198.56 ft²", "210.54 ft²", "215.28 ft²", "220.00 ft²"], correct: 2 }
+  ];
+
+  // Fisher-Yates shuffle algorithm to randomize question & option order
+  function shuffleQuizData(data) {
+    for (let i = data.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [data[i], data[j]] = [data[j], data[i]];
+    }
+
+    data.forEach(q => {
+      const correctAnswer = q.options[q.correct];
+      for (let i = q.options.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [q.options[i], q.options[j]] = [q.options[j], q.options[i]];
+      }
+      q.correct = q.options.indexOf(correctAnswer);
+    });
+  }
+
+  // Shuffle questions and options on initialization
+  shuffleQuizData(quizData);
+
+  let currentQuestion = 0;
+  let score = 0;
+
+  function loadQuestion() {
+    const q = quizData[currentQuestion];
+    document.getElementById("question-text").innerText = (currentQuestion + 1) + ". " + q.question;
+    document.getElementById("progress-text").innerText = `Question ${currentQuestion + 1} of ${quizData.length}`;
+    document.getElementById("next-btn").style.display = "none";
+
+    const container = document.getElementById("options-container");
+    container.innerHTML = "";
+
+    q.options.forEach((opt, index) => {
+      const btn = document.createElement("button");
+      btn.className = "flash-btn";
+      btn.innerText = String.fromCharCode(65 + index) + ") " + opt;
+      btn.onclick = () => selectOption(btn, index);
+      container.appendChild(btn);
+    });
+  }
+
+  function selectOption(selectedBtn, optionIndex) {
+    const q = quizData[currentQuestion];
+    const buttons = document.querySelectorAll(".flash-btn");
+
+    buttons.forEach(btn => btn.disabled = true);
+
+    if (optionIndex === q.correct) {
+      selectedBtn.style.background = "linear-gradient(to bottom, #99ff99 0%, #33cc33 100%)";
+      selectedBtn.style.borderColor = "#006600";
+      score++;
+    } else {
+      selectedBtn.style.background = "linear-gradient(to bottom, #ff9999 0%, #cc3333 100%)";
+      selectedBtn.style.borderColor = "#660000";
+      selectedBtn.style.color = "#fff";
+      
+      buttons[q.correct].style.background = "linear-gradient(to bottom, #99ff99 0%, #33cc33 100%)";
+      buttons[q.correct].style.borderColor = "#006600";
+    }
+
+    document.getElementById("next-btn").style.display = "block";
+  }
+
+  function nextQuestion() {
+    currentQuestion++;
+    if (currentQuestion < quizData.length) {
+      loadQuestion();
+    } else {
+      showResults();
+    }
+  }
+
+  function showResults() {
+    const stage = document.getElementById("quiz-stage");
+    stage.innerHTML = `
+      <div class="score-screen">
+        <h2>Quiz Complete!</h2>
+        <p>Your final score:</p>
+        <div class="score-badge">${score} / ${quizData.length}</div>
+        <button class="flash-btn" style="text-align:center; width: 60%; margin: 20px auto 0;" onclick="location.reload()">Try Again</button>
+      </div>
+    `;
+  }
+
+  loadQuestion();
+</script>
+
+</body>
+</html>
